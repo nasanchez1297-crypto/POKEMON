@@ -1,0 +1,9 @@
+{
+  "name": "pokemon-restock-elite",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  }
+}

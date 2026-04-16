@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pokémon Restock Elite</title>
+  <style>
+    :root{
+      --bg:#090c11; --bg2:#111722; --bg3:#182130; --bg4:#202b3d;
+      --line:#2a3648; --line2:#41516c;
+      --text:#eef3fb; --muted:#a4b0c4; --soft:#75829e;
+      --gold:#ffd54a; --green:#53d28a; --red:#ff7385; --blue:#69a8ff; --orange:#ffb75a;
+      --radius:18px; --radius-sm:12px; --shadow:0 18px 55px rgba(0,0,0,.38); --max:1360px;
+    }
+    *{box-sizing:border-box} html,body{margin:0;padding:0}
+    body{
+      min-height:100vh;color:var(--text);
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(255,213,74,.12), transparent 28%),
+        linear-gradient(180deg,#090c11,#0d1119);
+    }
+    a{color:inherit}
+    .top{position:sticky;top:0;z-index:50;background:rgba(9,12,17,.88);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .top-inner,.wrap{max-width:var(--max);margin:0 auto;padding:16px 18px}
+    .top-inner{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;font-size:20px;background:linear-gradient(135deg,rgba(255,213,74,.18),rgba(105,168,255,.12));border:1px solid rgba(255,213,74,.28)}
+    .brand h1{margin:0;font-size:18px;line-height:1.1}
+    .brand p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+    .grow{flex:1}
+    .pill{padding:8px 12px;border-radius:999px;border:1px solid var(--line2);font-size:12px;color:var(--muted);background:rgba(255,255,255,.02)}
+    .pill.ok{color:var(--green);border-color:rgba(83,210,138,.34);background:rgba(83,210,138,.08)}
+    .pill.warn{color:var(--gold);border-color:rgba(255,213,74,.34);background:rgba(255,213,74,.08)}
+    .pill.err{color:var(--red);border-color:rgba(255,115,133,.34);background:rgba(255,115,133,.08)}
+    .hero{display:grid;grid-template-columns:1.25fr .95fr;gap:18px;padding:22px 0 8px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero-main,.hero-side,.block{padding:22px}
+    .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:var(--gold)}
+    h2{margin:8px 0 10px;font-size:36px;line-height:1.05}
+    .sub{font-size:15px;line-height:1.6;color:var(--muted)}
+    .search-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .watch-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    input,select,textarea{
+      background:var(--bg3);color:var(--text);border:1px solid var(--line2);
+      border-radius:14px;padding:14px 15px;font-size:15px;outline:none
+    }
+    input{min-width:240px;flex:1}
+    select{min-width:160px}
+    button{
+      background:var(--bg3);color:var(--text);border:1px solid var(--line2);
+      border-radius:14px;padding:14px 16px;font-size:14px;font-weight:800;cursor:pointer
+    }
+    button:hover{filter:brightness(1.05)}
+    button.primary{background:rgba(255,213,74,.12);border-color:rgba(255,213,74,.34);color:var(--gold)}
+    button.blue{background:rgba(105,168,255,.12);border-color:rgba(105,168,255,.34);color:var(--blue)}
+    button.green{background:rgba(83,210,138,.12);border-color:rgba(83,210,138,.34);color:var(--green)}
+    button.red{background:rgba(255,115,133,.12);border-color:rgba(255,115,133,.34);color:var(--red)}
+    .quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .qchip{padding:8px 11px;border-radius:999px;background:var(--bg3);border:1px solid var(--line);font-size:12px;color:var(--muted);cursor:pointer}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .stat{padding:16px;border-radius:16px;background:var(--bg3);border:1px solid var(--line)}
+    .stat .k{font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:.08em}
+    .stat .v{font-size:28px;font-weight:900;margin-top:8px}
+    .gold{color:var(--gold)} .green{color:var(--green)} .red{color:var(--red)} .blue{color:var(--blue)}
+    .note{font-size:12px;color:var(--muted);line-height:1.55;margin-top:12px}
+    .content{display:grid;grid-template-columns:1.55fr .95fr;gap:18px;margin-top:18px}
+    .section-title{font-size:12px;color:var(--soft);text-transform:uppercase;letter-spacing:.12em;font-weight:800;margin-bottom:12px}
+    .filters,.store-filters,.watchlist{display:flex;gap:8px;flex-wrap:wrap}
+    .filter{padding:8px 10px;border-radius:999px;background:var(--bg3);border:1px solid var(--line);font-size:12px;color:var(--muted);cursor:pointer}
+    .filter.active{background:rgba(255,213,74,.10);border-color:rgba(255,213,74,.34);color:var(--gold)}
+    .results,.side-stack{display:flex;flex-direction:column;gap:12px}
+    .card{padding:16px;border-radius:16px;background:var(--bg3);border:1px solid var(--line)}
+    .card.new{border-color:rgba(83,210,138,.34);box-shadow:0 0 0 1px rgba(83,210,138,.12) inset}
+    .card.hot{border-color:rgba(255,213,74,.34)}
+    .card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+    .left{display:flex;gap:12px;align-items:flex-start;min-width:0}
+    .icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(255,213,74,.08);border:1px solid rgba(255,213,74,.18);font-size:20px}
+    .title{font-size:16px;font-weight:900}
+    .meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
+    .badges{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900;border:1px solid var(--line2)}
+    .badge.new{background:rgba(83,210,138,.08);border-color:rgba(83,210,138,.34);color:var(--green)}
+    .badge.drop{background:rgba(105,168,255,.08);border-color:rgba(105,168,255,.34);color:var(--blue)}
+    .badge.stock{background:rgba(255,213,74,.08);border-color:rgba(255,213,74,.34);color:var(--gold)}
+    .stores{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-top:14px}
+    .store{padding:11px 12px;border-radius:13px;background:rgba(255,255,255,.02);border:1px solid var(--line)}
+    .store .topline{display:flex;justify-content:space-between;gap:8px;align-items:center}
+    .store .name{font-size:12px;font-weight:800}
+    .status{font-size:11px;font-weight:900}
+    .status.in{color:var(--green)} .status.out{color:var(--red)} .status.unknown{color:var(--muted)} .status.link{color:var(--gold)}
+    .price{font-size:12px;color:var(--muted);margin-top:6px}
+    .updated{font-size:11px;color:var(--soft);margin-top:4px;line-height:1.35}
+    .links{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+    .sbtn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:12px;padding:9px 11px;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.02)}
+    .watch-item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--bg3);border:1px solid var(--line)}
+    .watch-item .small{font-size:11px;color:var(--muted);margin-top:3px}
+    .log{max-height:280px;overflow:auto;background:var(--bg3);border:1px solid var(--line);border-radius:14px;padding:12px}
+    .log-item{font-size:12px;color:var(--muted);padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+    .log-item:last-child{border-bottom:none}
+    .empty{padding:34px 18px;text-align:center;border:1px dashed var(--line2);border-radius:16px;background:rgba(255,255,255,.02);color:var(--muted)}
+    .toastwrap{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:60}
+    .toast{min-width:260px;max-width:350px;padding:12px 14px;border-radius:14px;background:rgba(10,12,18,.96);border:1px solid var(--line2);box-shadow:var(--shadow);font-size:13px}
+    .toast.ok{color:#bff0d3;border-color:rgba(83,210,138,.30)} .toast.warn{color:#ffe89a;border-color:rgba(255,213,74,.30)} .toast.err{color:#ffc6cc;border-color:rgba(255,115,133,.30)}
+    @media (max-width:1080px){.hero,.content{grid-template-columns:1fr}}
+    @media (max-width:560px){.stats{grid-template-columns:1fr} h2{font-size:28px}}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <div class="logo">⚡</div>
+        <div>
+          <h1>Pokémon Restock Elite</h1>
+          <p>Watchlist + NEW + RESTOCK + PRICE DROP + filtros + alertas</p>
+        </div>
+      </div>
+      <div class="grow"></div>
+      <div id="health-pill" class="pill warn">Backend: pendiente</div>
+      <div id="poll-pill" class="pill">Auto: off</div>
+      <div id="notif-pill" class="pill">Push: off</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="hero">
+      <div class="panel hero-main">
+        <div class="eyebrow">Modo elite</div>
+        <h2>La mejor versión posible dentro de un starter legal</h2>
+        <div class="sub">
+          Busca, crea watchlist, filtra tiendas, detecta productos nuevos, restocks y bajadas de precio. La comprobación real del starter está enfocada en Pokémon Center; las demás tiendas quedan listas como links rápidos porque sus sitios suelen bloquear scraping directo sin integraciones más pesadas.
+        </div>
+        <div class="search-row">
+          <input id="query" placeholder="Ej: Prismatic Evolutions Booster Bundle, 151 ETB, Journey Together..." />
+          <select id="interval">
+            <option value="0">Sin auto-check</option>
+            <option value="30">Cada 30 seg</option>
+            <option value="60" selected>Cada 1 min</option>
+            <option value="120">Cada 2 min</option>
+            <option value="300">Cada 5 min</option>
+          </select>
+          <button class="primary" onclick="searchNow()">Buscar</button>
+          <button class="blue" onclick="toggleAuto()">Auto</button>
+          <button class="green" onclick="requestNotifications()">Push</button>
+        </div>
+        <div class="watch-row">
+          <button onclick="addToWatchlist()">+ Agregar a watchlist</button>
+          <button onclick="refreshWatchlist()">Revisar watchlist</button>
+          <button onclick="exportWatchlist()">Exportar watchlist</button>
+          <button onclick="importWatchlist()">Importar</button>
+        </div>
+        <div class="quick">
+          <div class="qchip" onclick="quick('Prismatic Evolutions')">✨ Prismatic Evolutions</div>
+          <div class="qchip" onclick="quick('151')">🔴 151</div>
+          <div class="qchip" onclick="quick('Journey Together')">🤝 Journey Together</div>
+          <div class="qchip" onclick="quick('Ascended Heroes')">🦸 Ascended Heroes</div>
+          <div class="qchip" onclick="quick('booster bundle')">📦 Booster Bundle</div>
+          <div class="qchip" onclick="quick('elite trainer box')">🎯 ETB</div>
+        </div>
+      </div>
+      <div class="panel hero-side">
+        <div class="section-title">Resumen</div>
+        <div class="stats">
+          <div class="stat"><div class="k">Resultados</div><div id="stat-results" class="v gold">0</div></div>
+          <div class="stat"><div class="k">Watchlist</div><div id="stat-watchlist" class="v blue">0</div></div>
+          <div class="stat"><div class="k">Nuevos</div><div id="stat-new" class="v green">0</div></div>
+          <div class="stat"><div class="k">Disponibles</div><div id="stat-in" class="v green">0</div></div>
+        </div>
+        <div class="note">
+          El starter intenta extraer nombre, precio y disponibilidad desde Pokémon Center. Si algo cambia respecto a tu snapshot anterior, esta app te lo marca. Para cubrir de verdad Amazon/Target/Walmart/Best Buy también, haría falta añadir funciones dedicadas o usar servicios externos.
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="panel block">
+        <div class="section-title">Filtros de estado</div>
+        <div id="status-filters" class="filters"></div>
+        <div class="section-title" style="margin-top:14px">Tiendas visibles</div>
+        <div id="store-filters" class="store-filters"></div>
+        <div class="section-title" style="margin-top:14px">Resultados</div>
+        <div id="results" class="results"></div>
+      </div>
+
+      <div class="side-stack">
+        <div class="panel block">
+          <div class="section-title">Watchlist</div>
+          <div id="watchlist" class="results"></div>
+        </div>
+        <div class="panel block">
+          <div class="section-title">Log</div>
+          <div id="log" class="log"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="toastwrap" class="toastwrap"></div>
+
+  <script>
+    const STORES = [
+      {id:'pokemoncenter', name:'Pokémon Center', icon:'🎴'},
+      {id:'amazon', name:'Amazon', icon:'📦'},
+      {id:'target', name:'Target', icon:'🎯'},
+      {id:'walmart', name:'Walmart', icon:'🏪'},
+      {id:'bestbuy', name:'Best Buy', icon:'🛒'},
+      {id:'gamestop', name:'GameStop', icon:'🎮'},
+      {id:'costco', name:'Costco', icon:'🏬'},
+      {id:'samsclub', name:"Sam's Club", icon:'🏷️'},
+      {id:'tcgplayer', name:'TCGplayer', icon:'🃏'},
+      {id:'ebay', name:'eBay', icon:'🔖'}
+    ];
+
+    const STATUS_FILTERS = [
+      {id:'all', label:'Todo'},
+      {id:'new', label:'NEW'},
+      {id:'in', label:'En stock'},
+      {id:'drop', label:'Price drop'}
+    ];
+
+    const state = {
+      storeFilters: JSON.parse(localStorage.getItem('elite_store_filters') || JSON.stringify(STORES.map(x => x.id))),
+      statusFilter: localStorage.getItem('elite_status_filter') || 'all',
+      seenMap: JSON.parse(localStorage.getItem('elite_seen_map') || '{}'),
+      watchlist: JSON.parse(localStorage.getItem('elite_watchlist') || '[]'),
+      lastResults: [],
+      intervalId: null,
+      lastQuery: ''
+    };
+
+    function saveState(){
+      localStorage.setItem('elite_store_filters', JSON.stringify(state.storeFilters));
+      localStorage.setItem('elite_status_filter', state.statusFilter);
+      localStorage.setItem('elite_seen_map', JSON.stringify(state.seenMap));
+      localStorage.setItem('elite_watchlist', JSON.stringify(state.watchlist));
+    }
+
+    function toast(type, msg){
+      const wrap = document.getElementById('toastwrap');
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.textContent = msg;
+      wrap.appendChild(t);
+      setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateY(6px)'; t.style.transition='.25s ease'; setTimeout(()=>t.remove(),250); }, 4200);
+    }
+
+    function log(msg){
+      const box = document.getElementById('log');
+      const row = document.createElement('div');
+      row.className = 'log-item';
+      row.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong><br>${escapeHtml(msg)}`;
+      box.prepend(row);
+    }
+
+    function escapeHtml(str){
+      return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");
+    }
+
+    function quick(q){ document.getElementById('query').value = q; searchNow(); }
+
+    function renderStatusFilters(){
+      const box = document.getElementById('status-filters');
+      box.innerHTML = STATUS_FILTERS.map(f => `
+        <div class="filter ${state.statusFilter === f.id ? 'active' : ''}" onclick="setStatusFilter('${f.id}')">${f.label}</div>
+      `).join('');
+    }
+    function setStatusFilter(id){ state.statusFilter = id; saveState(); renderStatusFilters(); renderResults(state.lastResults); }
+
+    function renderStoreFilters(){
+      const box = document.getElementById('store-filters');
+      box.innerHTML = STORES.map(s => `
+        <div class="filter ${state.storeFilters.includes(s.id) ? 'active' : ''}" onclick="toggleStoreFilter('${s.id}')">${s.icon} ${s.name}</div>
+      `).join('');
+    }
+    function toggleStoreFilter(id){
+      if(state.storeFilters.includes(id)) state.storeFilters = state.storeFilters.filter(x => x !== id);
+      else state.storeFilters.push(id);
+      saveState(); renderStoreFilters(); renderResults(state.lastResults);
+    }
+
+    async function checkHealth(){
+      try{
+        const res = await fetch('/.netlify/functions/health');
+        if(!res.ok) throw new Error('health fail');
+        const pill = document.getElementById('health-pill');
+        pill.className = 'pill ok'; pill.textContent = 'Backend: ok';
+      }catch(err){
+        const pill = document.getElementById('health-pill');
+        pill.className = 'pill err'; pill.textContent = 'Backend: no disponible';
+      }
+    }
+
+    function requestNotifications(){
+      if(!('Notification' in window)){ toast('err','Este navegador no soporta notificaciones'); return; }
+      Notification.requestPermission().then(permission => {
+        const pill = document.getElementById('notif-pill');
+        if(permission === 'granted'){ pill.className = 'pill ok'; pill.textContent = 'Push: on'; toast('ok','Notificaciones activadas'); }
+        else { pill.className = 'pill'; pill.textContent = 'Push: off'; toast('warn','Permiso no concedido'); }
+      });
+    }
+    function notify(title, body){ if('Notification' in window && Notification.permission === 'granted'){ new Notification(title, { body }); } }
+
+    function toggleAuto(){
+      const secs = Number(document.getElementById('interval').value);
+      const pill = document.getElementById('poll-pill');
+      if(state.intervalId){
+        clearInterval(state.intervalId); state.intervalId = null;
+        pill.className = 'pill'; pill.textContent = 'Auto: off';
+        toast('warn','Auto-check apagado'); return;
+      }
+      if(!secs){ toast('warn','Elige un intervalo'); return; }
+      if(!state.lastQuery && !state.watchlist.length){ toast('warn','Primero busca algo o usa la watchlist'); return; }
+      state.intervalId = setInterval(() => {
+        if(state.watchlist.length) refreshWatchlist();
+        else if(state.lastQuery) searchNow();
+      }, secs * 1000);
+      pill.className = 'pill ok'; pill.textContent = `Auto: ${secs}s`;
+      toast('ok', `Auto-check cada ${secs} segundos`);
+    }
+
+    function storeSearchUrl(storeId, name){
+      const q = encodeURIComponent(name);
+      return {
+        pokemoncenter:`https://www.pokemoncenter.com/search/${q}`,
+        amazon:`https://www.amazon.com/s?k=${q}`,
+        target:`https://www.target.com/s?searchTerm=${q}`,
+        walmart:`https://www.walmart.com/search?q=${q}`,
+        bestbuy:`https://www.bestbuy.com/site/searchpage.jsp?st=${q}`,
+        gamestop:`https://www.gamestop.com/search/?q=${q}`,
+        costco:`https://www.costco.com/CatalogSearch?keyword=${q}`,
+        samsclub:`https://www.samsclub.com/s/${q}`,
+        tcgplayer:`https://www.tcgplayer.com/search/all/product?q=${q}`,
+        ebay:`https://www.ebay.com/sch/i.html?_nkw=${q}`
+      }[storeId];
+    }
+
+    function labelStatus(status){
+      return ({in:'Disponible', out:'Agotado', unknown:'Sin dato', link:'Búsqueda'})[status] || 'Sin dato';
+    }
+
+    function enrichItems(results){
+      return results.map(item => {
+        const key = item.key || item.name;
+        const prev = state.seenMap[key] || null;
+        const currentPc = item.storeData?.pokemoncenter || {};
+        const prevPc = prev?.pokemoncenter || {};
+        const isNew = !prev;
+        const restock = prevPc.status && prevPc.status !== 'in' && currentPc.status === 'in';
+        const priceDrop = prevPc.price && currentPc.price && parseMoney(currentPc.price) < parseMoney(prevPc.price);
+        state.seenMap[key] = item.storeData;
+        return {...item, key, isNew, restock, priceDrop};
+      });
+    }
+
+    function parseMoney(v){
+      const n = Number(String(v || '').replace(/[^0-9.]/g,''));
+      return isNaN(n) ? Infinity : n;
+    }
+
+    async function searchNow(){
+      const query = document.getElementById('query').value.trim();
+      if(!query){ toast('warn','Escribe un producto'); return; }
+      state.lastQuery = query;
+      log(`Buscando: ${query}`);
+      try{
+        const res = await fetch('/.netlify/functions/search-product', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','Accept':'application/json'},
+          body: JSON.stringify({ query })
+        });
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        let results = enrichItems(data.results || []);
+        saveState();
+        state.lastResults = results;
+        renderResults(results);
+        updateStats(results);
+        announceChanges(results, query);
+      }catch(err){
+        toast('err', `Error buscando: ${err.message}`);
+        log(`Error: ${err.message}`);
+      }
+    }
+
+    function announceChanges(results, query){
+      const newCount = results.filter(x => x.isNew).length;
+      const restocks = results.filter(x => x.restock);
+      const drops = results.filter(x => x.priceDrop);
+
+      if(newCount){ toast('ok', `${newCount} NEW detectado(s)`); notify('Pokémon Elite', `${newCount} nuevos para ${query}`); }
+      if(restocks.length){ toast('ok', `${restocks.length} RESTOCK detectado(s)`); notify('RESTOCK detectado', restocks.slice(0,2).map(x => x.name).join(', ')); }
+      if(drops.length){ toast('ok', `${drops.length} PRICE DROP detectado(s)`); }
+    }
+
+    function addToWatchlist(){
+      const query = document.getElementById('query').value.trim();
+      if(!query){ toast('warn','Escribe un producto primero'); return; }
+      if(state.watchlist.includes(query)){ toast('warn','Ya está en la watchlist'); return; }
+      state.watchlist.unshift(query);
+      state.watchlist = state.watchlist.slice(0, 30);
+      saveState();
+      renderWatchlist();
+      toast('ok','Agregado a watchlist');
+    }
+
+    async function refreshWatchlist(){
+      if(!state.watchlist.length){ toast('warn','La watchlist está vacía'); return; }
+      log('Revisando watchlist...');
+      const combined = [];
+      for(const q of state.watchlist){
+        try{
+          const res = await fetch('/.netlify/functions/search-product', {
+            method:'POST',
+            headers:{'Content-Type':'application/json','Accept':'application/json'},
+            body: JSON.stringify({ query: q })
+          });
+          if(!res.ok) continue;
+          const data = await res.json();
+          combined.push(...(data.results || []));
+        }catch(err){}
+      }
+      let results = enrichItems(combined);
+      const dedup = new Map();
+      for(const item of results){ if(!dedup.has(item.key)) dedup.set(item.key, item); }
+      results = Array.from(dedup.values());
+      state.lastResults = results;
+      saveState();
+      renderResults(results);
+      updateStats(results);
+      announceChanges(results, 'watchlist');
+      log('Watchlist revisada');
+    }
+
+    function removeWatch(q){
+      state.watchlist = state.watchlist.filter(x => x !== q);
+      saveState(); renderWatchlist();
+    }
+
+    function exportWatchlist(){
+      const blob = new Blob([JSON.stringify({ watchlist: state.watchlist }, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'pokemon-watchlist.json'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importWatchlist(){
+      const input = document.createElement('input');
+      input.type = 'file'; input.accept = 'application/json';
+      input.onchange = async () => {
+        const file = input.files[0];
+        if(!file) return;
+        const text = await file.text();
+        try{
+          const data = JSON.parse(text);
+          if(Array.isArray(data.watchlist)){ state.watchlist = data.watchlist.slice(0,30); saveState(); renderWatchlist(); toast('ok','Watchlist importada'); }
+        }catch(err){ toast('err','JSON inválido'); }
+      };
+      input.click();
+    }
+
+    function renderWatchlist(){
+      const box = document.getElementById('watchlist');
+      document.getElementById('stat-watchlist').textContent = state.watchlist.length;
+      if(!state.watchlist.length){
+        box.innerHTML = `<div class="empty">Sin watchlist todavía.</div>`;
+        return;
+      }
+      box.innerHTML = state.watchlist.map(q => `
+        <div class="watch-item">
+          <div>
+            <div><strong>${escapeHtml(q)}</strong></div>
+            <div class="small">Vigilado por auto-check y refresh manual</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="blue" onclick="quick(${JSON.stringify(q)})">Buscar</button>
+            <button class="red" onclick="removeWatch(${JSON.stringify(q)})">Quitar</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function resultPasses(item){
+      if(state.statusFilter === 'new' && !item.isNew) return false;
+      if(state.statusFilter === 'in' && !(item.storeData?.pokemoncenter?.status === 'in' || item.restock)) return false;
+      if(state.statusFilter === 'drop' && !item.priceDrop) return false;
+      return true;
+    }
+
+    function renderResults(results){
+      const box = document.getElementById('results');
+      const filtered = results.filter(resultPasses);
+      if(!filtered.length){
+        box.innerHTML = `<div class="empty">Sin resultados para este filtro.</div>`;
+        return;
+      }
+
+      box.innerHTML = filtered.map(item => {
+        const visibleStores = STORES.filter(s => state.storeFilters.includes(s.id));
+        const storeCards = visibleStores.map(store => {
+          const real = item.storeData?.[store.id];
+          const d = real || {
+            status: store.id === 'pokemoncenter' ? 'unknown' : 'link',
+            price: null,
+            note: store.id === 'pokemoncenter' ? 'Sin respuesta' : 'Abrir búsqueda',
+            lastUpdated: null
+          };
+          return `
+            <div class="store">
+              <div class="topline">
+                <div class="name">${store.icon} ${store.name}</div>
+                <div class="status ${d.status || 'unknown'}">${labelStatus(d.status)}</div>
+              </div>
+              <div class="price">Precio: ${d.price || '—'}</div>
+              <div class="updated">${escapeHtml(d.note || '')}</div>
+              <div class="updated">${d.lastUpdated ? new Date(d.lastUpdated).toLocaleString() : ''}</div>
+            </div>
+          `;
+        }).join('');
+
+        const hot = item.restock || (item.storeData?.pokemoncenter?.status === 'in');
+        return `
+          <div class="card ${item.isNew ? 'new' : ''} ${hot ? 'hot' : ''}">
+            <div class="card-top">
+              <div class="left">
+                <div class="icon">🃏</div>
+                <div>
+                  <div class="title">${escapeHtml(item.name)}</div>
+                  <div class="meta">Fuente principal: Pokémon Center · SKU: ${escapeHtml(item.sku || '—')}</div>
+                </div>
+              </div>
+              <div class="badges">
+                ${item.isNew ? `<div class="badge new">NEW</div>` : ''}
+                ${item.restock ? `<div class="badge stock">RESTOCK</div>` : ''}
+                ${item.priceDrop ? `<div class="badge drop">PRICE DROP</div>` : ''}
+              </div>
+            </div>
+            <div class="stores">${storeCards}</div>
+            <div class="links">
+              ${visibleStores.map(store => `<a class="sbtn" href="${storeSearchUrl(store.id, item.name)}" target="_blank" rel="noopener noreferrer">${store.icon} ${store.name}</a>`).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateStats(results){
+      document.getElementById('stat-results').textContent = results.length;
+      document.getElementById('stat-new').textContent = results.filter(x => x.isNew).length;
+      document.getElementById('stat-in').textContent = results.filter(x => x.restock || x.storeData?.pokemoncenter?.status === 'in').length;
+    }
+
+    renderStatusFilters();
+    renderStoreFilters();
+    renderWatchlist();
+    checkHealth();
+  </script>
+</body>
+</html>
